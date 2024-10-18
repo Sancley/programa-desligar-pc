@@ -1,24 +1,26 @@
 import os
 import time
-import flet as ft
+import flet as ft #Importa a biblioteca Flet para a criação de interface gráfica
 
 def main(page: ft.Page):
-    # Configurações da janela
-    page.title = "Agendador de Desligamento"
-    page.vertical_alignment = ft.MainAxisAlignment.CENTER
-    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
-    page.bgcolor = "#3A0CA3"  # Cor de fundo roxa
-    page.padding = 50
+    # Configurações da janela principal da aplicação 
+    page.title = "Agendador de Desligamento" # Define o título da janela
+    page.vertical_alignment = ft.MainAxisAlignment.CENTER  # Centraliza verticalmente 
+    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER #centraliza Horizontalmente 
+    page.bgcolor = "#3A0CA3"  # Define a cor de fundo (roxa)
+    page.padding = 50 # Define um padding interno de 50 pixels
 
-    # Função para agendar o desligamento
+    # Função para agendar o desligamento do computador
     def agendar_desligamento(e):
-        opcao = dropdown_opcao.value
+        opcao = dropdown_opcao.value #obtém a opção escolhida no dropdown
 
+                # If que precisa de ajuste (atualemnte caso a opção seja "horário" agenda por horário)
         if opcao == "horario":
-            horario = input_horario.value
+            horario = input_horario.value  #obtém o valor inserido para horário 
             try:
-                hora_definida = time.strptime(horario, '%H:%M')
-                segundos_atual = time.mktime(time.localtime())
+                # Converte o horário digitado em uma estrutura de tempo
+                hora_definida = time.strptime(horario, '%H:%M') 
+                segundos_atual = time.mktime(time.localtime())  #  Segundos desde a época ou horario atual (localtime)
                 segundos_definido = time.mktime((time.localtime()[:3] + hora_definida[3:6] + (-1, -1, -1)))
                 segundos_para_desligar = int(segundos_definido - segundos_atual)
 
