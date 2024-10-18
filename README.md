@@ -8,6 +8,8 @@ Este projeto é uma aplicação simples de agendamento de desligamento de comput
 - Agendar o desligamento por tempo (horas e minutos).
 - Interface gráfica simples e intuitiva.
 - Feedback visual indicando sucesso ou erros ao agendar o desligamento.
+- O executável vai ser barrado pelo Windows Defender, será necessário permitir sua execução.
+- Caso não se sinta a vontade de usar o executável da pasta, pode criar o seu próprio executável com  o comando PyInstaller vai precisar apenas do documento em .py 
 
 ## 🛠️ Tecnologias Utilizadas
 
