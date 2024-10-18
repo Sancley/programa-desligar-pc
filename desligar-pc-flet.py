@@ -1,95 +1,128 @@
-import os   # Módulo usado para enviar comandos ao sistema operacional, como o desligamento.
-import time # Módulo utilizado para manipulação de horários e contagem de tempo.
-import flet as ft  # Biblioteca Flet, usada para criar interfaces gráficas (UI) com Python.
+import os
+import time
+import flet as ft
 
-# Função principal que será executada ao iniciar o programa
 def main(page: ft.Page):
-    # Configurações da janela principal
-    page.title = "Agendar Desligamento"  # Título da janela
-    page.vertical_alignment = ft.MainAxisAlignment.START  # Alinha os elementos na parte superior da janela
+    # Configurações da janela
+    page.title = "Agendador de Desligamento"
+    page.vertical_alignment = ft.MainAxisAlignment.CENTER
+    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+    page.bgcolor = "#3A0CA3"  # Cor de fundo roxa
+    page.padding = 50
 
-    # Função que será chamada quando o usuário clicar no botão "Confirmar"
+    # Função para agendar o desligamento
     def agendar_desligamento(e):
-        # Verifica qual opção o usuário selecionou no dropdown: "horário" ou "tempo"
         opcao = dropdown_opcao.value
 
-        if opcao == "horario":  # Se a opção for "Por horário (HH:MM)"
-            horario = input_horario.value  # Obtém o valor inserido pelo usuário (formato HH:MM)
+        if opcao == "horario":
+            horario = input_horario.value
             try:
-                # Converte o horário inserido para um formato de tempo utilizável
                 hora_definida = time.strptime(horario, '%H:%M')
-                segundos_atual = time.mktime(time.localtime())  # Obtém o tempo atual em segundos
+                segundos_atual = time.mktime(time.localtime())
                 segundos_definido = time.mktime((time.localtime()[:3] + hora_definida[3:6] + (-1, -1, -1)))
-                # Calcula quantos segundos faltam até o horário definido pelo usuário
                 segundos_para_desligar = int(segundos_definido - segundos_atual)
 
-                # Se o tempo até o desligamento for maior que 0, agenda o desligamento
                 if segundos_para_desligar > 0:
-                    os.system(f"shutdown /s /t {segundos_para_desligar}")  # Comando para desligar o PC
-                    label_feedback.value = f"Desligamento agendado para {horario}."  # Mostra mensagem de sucesso
+                    os.system(f"shutdown /s /t {segundos_para_desligar}")
+                    label_feedback.value = f"💡 Desligamento agendado para {horario}."
+                    label_feedback.color = "green"
                 else:
-                    # Se o horário definido já passou, avisa o usuário
-                    label_feedback.value = "Horário inválido! Deve ser um horário futuro."
+                    label_feedback.value = "⚠️ Horário inválido! Deve ser um horário futuro."
+                    label_feedback.color = "red"
             except ValueError:
-                # Se o usuário inserir um horário com formato errado, avisa sobre o erro
-                label_feedback.value = "Formato de horário inválido! Use HH:MM."
+                label_feedback.value = "❌ Formato de horário inválido! Use HH:MM."
+                label_feedback.color = "red"
         
-        elif opcao == "tempo":  # Se a opção for "Por tempo (Horas/Minutos)"
-            horas = input_horas.value or "0"  # Obtém o valor de horas (ou 0 se estiver vazio)
-            minutos = input_minutos.value or "0"  # Obtém o valor de minutos (ou 0 se estiver vazio)
+        elif opcao == "tempo":
+            horas = input_horas.value or "0"
+            minutos = input_minutos.value or "0"
 
             try:
-                horas = int(horas)  # Converte o valor de horas para inteiro
-                minutos = int(minutos)  # Converte o valor de minutos para inteiro
-                # Calcula quantos segundos faltam com base nas horas e minutos inseridos
+                horas = int(horas)
+                minutos = int(minutos)
                 segundos_para_desligar = (horas * 3600) + (minutos * 60)
 
-                # Se o tempo definido for maior que 0, agenda o desligamento
                 if segundos_para_desligar > 0:
-                    os.system(f"shutdown /s /t {segundos_para_desligar}")  # Comando para desligar o PC
-                    label_feedback.value = f"Desligamento agendado para {horas} horas e {minutos} minutos."
+                    os.system(f"shutdown /s /t {segundos_para_desligar}")
+                    label_feedback.value = f"💡 Desligamento agendado para {horas} horas e {minutos} minutos."
+                    label_feedback.color = "green"
                 else:
-                    # Se o tempo for zero ou negativo, avisa o usuário
-                    label_feedback.value = "O tempo deve ser maior que zero!"
+                    label_feedback.value = "⚠️ O tempo deve ser maior que zero!"
+                    label_feedback.color = "red"
             except ValueError:
-                # Se o usuário inserir valores inválidos (não numéricos), avisa sobre o erro
-                label_feedback.value = "Insira valores válidos para horas e minutos."
+                label_feedback.value = "❌ Insira valores válidos para horas e minutos."
+                label_feedback.color = "red"
 
-        # Atualiza a interface para exibir o feedback (mensagem) ao usuário
         page.update()
 
-    # Componente Dropdown para escolher a forma de agendamento (por horário ou tempo)
+    # Função para cancelar o desligamento
+    def cancelar_desligamento(e):
+        os.system("shutdown /a")
+        label_feedback.value = "❌ Desligamento cancelado!"
+        label_feedback.color = "blue"
+        page.update()
+
+    # Título principal
+    titulo = ft.Text("Escolha como agendar o desligamento", size=20, color="blue", weight="bold")
+
+    # Dropdown para selecionar como agendar o desligamento
     dropdown_opcao = ft.Dropdown(
-        width=200,  # Largura do dropdown
-        options=[  # Opções dentro do dropdown
-            ft.dropdown.Option("horario", "Por horário (HH:MM)"),  # Agendar por horário
-            ft.dropdown.Option("tempo", "Por tempo (Horas/Minutos)")  # Agendar por tempo
+        width=250,
+        options=[
+            ft.dropdown.Option("horario", "Por horário (HH:MM)"),
+            ft.dropdown.Option("tempo", "Por tempo (Horas/Minutos)")
         ],
-        label="Escolha como deseja agendar o desligamento",  # Rótulo do dropdown
-        value="horario",  # Valor padrão selecionado (horário)
+        label="Método de agendamento",
+        value="horario",
+        border_color="black",
+        bgcolor="white"
     )
 
-    # Campo de entrada para definir o horário (formato HH:MM)
-    input_horario = ft.TextField(label="Defina o horário (HH:MM)", width=200)
+    # Inputs para o horário e tempo
+    input_horario = ft.TextField(label="Horário (HH:MM)", width=300, border_color="gray", bgcolor="white")
+    input_horas = ft.TextField(label="Horas", width=140, border_color="gray", bgcolor="white")
+    input_minutos = ft.TextField(label="Minutos", width=140, border_color="gray", bgcolor="white")
 
-    # Campos de entrada para definir o tempo (horas e minutos)
-    input_horas = ft.TextField(label="Horas", width=100)  # Campo para horas
-    input_minutos = ft.TextField(label="Minutos", width=100)  # Campo para minutos
+    # Botão para confirmar o agendamento
+    button_confirmar = ft.ElevatedButton(
+        text="Agendar Desligamento",
+        bgcolor="#f72585",  # Cor de fundo rosa
+        color="white",
+        width=200,
+        on_click=agendar_desligamento
+    )
 
-    # Botão que o usuário clica para confirmar o agendamento
-    button_confirmar = ft.ElevatedButton(text="Confirmar", on_click=agendar_desligamento)
+    # Botão para cancelar o desligamento
+    button_cancelar = ft.ElevatedButton(
+        text="Cancelar Desligamento",
+        bgcolor="#ff0000",  # Cor vermelha para cancelamento
+        color="white",
+        width=200,
+        on_click=cancelar_desligamento
+    )
 
-    # Label para exibir feedback ao usuário (mensagens de sucesso ou erro)
-    label_feedback = ft.Text(value="", color="blue")
+    # Label para mostrar feedback de sucesso ou erro
+    label_feedback = ft.Text(value="", color="blue", size=16)
 
-    # Adiciona todos os componentes à interface na ordem que aparecerão
+    # Layout e organização dos elementos
     page.add(
-        dropdown_opcao,  # Dropdown para escolha de modo de agendamento
-        input_horario,   # Campo para horário
-        ft.Row([input_horas, input_minutos], alignment=ft.MainAxisAlignment.START),  # Campos para tempo
-        button_confirmar,  # Botão de confirmação
-        label_feedback  # Feedback para o usuário
+        ft.Container(
+            content=ft.Column([
+                titulo,  # Título acima
+                dropdown_opcao,
+                input_horario,
+                ft.Row([input_horas, input_minutos], spacing=10),
+                button_confirmar,
+                button_cancelar,  # Botões embaixo um do outro
+                label_feedback
+            ], alignment=ft.MainAxisAlignment.CENTER),
+            padding=30,
+            border_radius=15,
+            bgcolor="white",
+            width=400,
+            shadow=ft.BoxShadow(blur_radius=20, spread_radius=5, color=ft.colors.GREY)
+        )
     )
 
-# Inicia o aplicativo Flet
+# Inicia o app
 ft.app(target=main)
