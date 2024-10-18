@@ -2,8 +2,6 @@
 
 Este projeto é uma aplicação simples de agendamento de desligamento de computador, criada com **Python** e a biblioteca **Flet** para interfaces gráficas. O objetivo do programa é permitir que o usuário defina um horário ou intervalo de tempo para que o computador seja desligado automaticamente, ideal para quem deseja deixar o computador ligado enquanto assiste algo e não quer se preocupar em desligá-lo depois.
 
-
-
 ## 🚀 Funcionalidades
 
 - Definir desligamento por horário específico (HH:MM).
